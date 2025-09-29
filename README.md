@@ -53,3 +53,23 @@ The code style definition follows the [official Kotlin style guide](https://deve
 * [Ads](https://github.com/audiomack/audiomack/wiki/Mobile-App-Ads)
 * [Unit testing](https://github.com/audiomack/audiomack/wiki/Android-app-unit-testing)
 * [Browse all wiki](https://github.com/audiomack/audiomack/wiki#mobile-app)
+
+## DexGuard sample application
+
+The repository now includes a lightweight `dexguard-sample` module that showcases the DexGuard
+Gradle configuration without relying on the Audiomack app dependencies. The module can build with
+either the real DexGuard plugin (when credentials are supplied) or the stub shipped in `buildSrc`.
+
+To exercise the stubbed configuration:
+
+```
+./gradlew --no-daemon -PuseDexguardStub=true :dexguard-sample:dexguardRelease
+```
+
+To run the sample with the real DexGuard plugin, provide repository credentials using Gradle
+properties or the `DEXGUARD_REPO_USER` and `DEXGUARD_REPO_PASSWORD` environment variables and omit
+the stub flag:
+
+```
+./gradlew --no-daemon -PdexguardRepoUser="<username>" -PdexguardRepoPassword="<password>" :dexguard-sample:dexguardRelease
+```

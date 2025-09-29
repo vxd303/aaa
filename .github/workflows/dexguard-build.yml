@@ -67,7 +67,12 @@ jobs:
         if: steps.flags.outputs.dexguard_stub == 'true'
         run: ./ci/create-placeholder-secrets.sh
 
-      - name: Run DexGuard release build
+      - name: Build DexGuard sample app
+        env:
+          CI: true
+        run: ./gradlew --no-daemon -PuseDexguardStub=${{ steps.flags.outputs.dexguard_stub }} :dexguard-sample:dexguardRelease
+
+      - name: Run Audiomack DexGuard release build
         env:
           CI: true
         run: ./gradlew --no-daemon -PuseEmbraceStub=${{ steps.flags.outputs.embrace_stub }} -PuseDexguardStub=${{ steps.flags.outputs.dexguard_stub }} :AM:dexguardRelease

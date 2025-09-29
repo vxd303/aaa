@@ -1,0 +1,8 @@
+# Basic DexGuard configuration for the sample application.
+# Refer to the official DexGuard documentation to adjust settings for production apps.
+
+-input              classes
+-output             build/outputs/dexguard
+-dontoptimize
+-dontobfuscate
+-keep class com.example.dexguardsample.** { *; }
