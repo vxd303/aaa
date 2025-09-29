@@ -20,10 +20,15 @@ buildscript {
 
     dependencies {
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
-        classpath "com.guardsquare:dexguard-gradle-plugin:1.0.6"
+        if (!Boolean.parseBoolean(project.findProperty("useDexguardStub")?.toString() ?: "false")) {
+            classpath "com.guardsquare:dexguard-gradle-plugin:1.0.6"
+        } else {
+            project.logger.lifecycle('DexGuard Gradle plugin dependency skipped; using stub implementation.')
+        }
     }
 }
 def useEmbraceStub = Boolean.parseBoolean(project.findProperty("useEmbraceStub")?.toString() ?: "false")
+def useDexguardStub = Boolean.parseBoolean(project.findProperty("useDexguardStub")?.toString() ?: "false")
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
@@ -38,7 +43,12 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply from: 'jacoco.gradle'
 apply from: 'ktlint.gradle'
-apply plugin: 'dexguard'
+if (useDexguardStub) {
+    apply plugin: 'com.audiomack.dexguard-stub'
+    logger.lifecycle('DexGuard plugin disabled; using stub tasks instead.')
+} else {
+    apply plugin: 'dexguard'
+}
 
 repositories {
     google()
