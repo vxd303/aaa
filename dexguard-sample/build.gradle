@@ -1,8 +1,8 @@
 def useDexguardStub = Boolean.parseBoolean((project.findProperty("useDexguardStub") ?: "true").toString())
-def dexguardRepoUser = (project.findProperty("dexguardRepoUser") ?: System.getenv("DEXGUARD_REPO_USER"))?.toString()
-def dexguardRepoPassword = (project.findProperty("dexguardRepoPassword") ?: System.getenv("DEXGUARD_REPO_PASSWORD"))?.toString()
-
-def hasDexguardCredentials = dexguardRepoUser && dexguardRepoPassword
+def dexguardRepoCredentials = [
+        user    : (project.findProperty("dexguardRepoUser") ?: System.getenv("DEXGUARD_REPO_USER"))?.toString(),
+        password: (project.findProperty("dexguardRepoPassword") ?: System.getenv("DEXGUARD_REPO_PASSWORD"))?.toString()
+]
 
 buildscript {
     repositories {
@@ -11,10 +11,10 @@ buildscript {
         maven {
             url "https://maven.guardsquare.com"
             content { includeGroupByRegex "com\\.guardsquare.*" }
-            if (hasDexguardCredentials) {
+            if (dexguardRepoCredentials.user && dexguardRepoCredentials.password) {
                 credentials {
-                    username = dexguardRepoUser
-                    password = dexguardRepoPassword
+                    username = dexguardRepoCredentials.user
+                    password = dexguardRepoCredentials.password
                 }
                 authentication { basic(BasicAuthentication) }
             }
