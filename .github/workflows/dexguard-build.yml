@@ -1,0 +1,38 @@
+name: DexGuard Build Test
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - development
+      - main
+
+jobs:
+  dexguard:
+    name: Run DexGuard build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: gradle
+
+      - name: Install Android SDK components
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 29
+          build-tools: 29.0.3
+
+      - name: Generate placeholder secrets
+        run: ./ci/create-placeholder-secrets.sh
+
+      - name: Run DexGuard release build
+        env:
+          CI: true
+        run: ./gradlew --no-daemon :AM:dexguardRelease
