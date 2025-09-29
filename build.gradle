@@ -73,7 +73,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.android.tools.build:bundletool:1.4.0'
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
-        if (!Boolean.parseBoolean(findProperty("useEmbraceStub")?.toString() ?: "false")) {
+        if (!Boolean.parseBoolean(findProperty("useEmbraceStub")?.toString() ?: "true")) {
             classpath "embrace-io:embrace-swazzler:$embraceVersion"
         }
     }
