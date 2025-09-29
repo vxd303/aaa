@@ -16,18 +16,24 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 for Android SDK tools
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
 
       - name: Install Android SDK components
         uses: android-actions/setup-android@v3
         with:
           api-level: 29
           build-tools: 29.0.3
+
+      - name: Set up JDK 11 for Gradle
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: gradle
 
       - name: Generate placeholder secrets
         run: ./ci/create-placeholder-secrets.sh
