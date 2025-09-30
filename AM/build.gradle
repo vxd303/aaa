@@ -5,8 +5,8 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
         maven {
             credentials  {
-                username = SECRET_WITHOUT_QUOTES("AM_GUARDSQUARE_USER")
-                password = SECRET_WITHOUT_QUOTES("AM_GUARDSQUARE_PASSWORD")
+                username = "dev@audiomack.com"
+                password = "42Z}(#m{}Xpq39=4>@)*"
             }
             url "https://maven.guardsquare.com"
             content {
@@ -20,19 +20,35 @@ buildscript {
 
     dependencies {
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.4.1'
-        classpath "com.guardsquare:dexguard-gradle-plugin:1.0.6"
+        if (!Boolean.parseBoolean(project.findProperty("useDexguardStub")?.toString() ?: "false")) {
+            classpath "com.guardsquare:dexguard-gradle-plugin:1.0.6"
+        } else {
+            project.logger.lifecycle('DexGuard Gradle plugin dependency skipped; using stub implementation.')
+        }
     }
 }
+def useEmbraceStub = Boolean.parseBoolean(project.findProperty("useEmbraceStub")?.toString() ?: "true")
+def useDexguardStub = Boolean.parseBoolean(project.findProperty("useDexguardStub")?.toString() ?: "false")
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'embrace-swazzler'
+if (!useEmbraceStub) {
+    apply plugin: 'embrace-swazzler'
+} else {
+    logger.lifecycle('Embrace swazzler plugin disabled; using stub classes instead.')
+}
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply from: 'jacoco.gradle'
 apply from: 'ktlint.gradle'
-apply plugin: 'dexguard'
+if (useDexguardStub) {
+    apply plugin: 'com.audiomack.dexguard-stub'
+    logger.lifecycle('DexGuard plugin disabled; using stub tasks instead.')
+} else {
+    apply plugin: 'dexguard'
+}
 
 repositories {
     google()
@@ -50,6 +66,14 @@ android {
 
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
+
+    if (useEmbraceStub) {
+        sourceSets {
+            main {
+                java.srcDir('src/embraceStub/java')
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.audiomack"

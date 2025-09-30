@@ -1,0 +1,83 @@
+def useDexguardStub = Boolean.parseBoolean((project.findProperty("useDexguardStub") ?: "true").toString())
+def dexguardRepoCredentials = [
+        user    : (project.findProperty("dexguardRepoUser") ?: System.getenv("DEXGUARD_REPO_USER"))?.toString(),
+        password: (project.findProperty("dexguardRepoPassword") ?: System.getenv("DEXGUARD_REPO_PASSWORD"))?.toString()
+]
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url "https://maven.guardsquare.com"
+            content { includeGroupByRegex "com\\.guardsquare.*" }
+            if (dexguardRepoCredentials.user && dexguardRepoCredentials.password) {
+                credentials {
+                    username = dexguardRepoCredentials.user
+                    password = dexguardRepoCredentials.password
+                }
+                authentication { basic(BasicAuthentication) }
+            }
+        }
+    }
+    dependencies {
+        if (!useDexguardStub) {
+            classpath "com.guardsquare:dexguard-gradle-plugin:1.0.6"
+        }
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+if (useDexguardStub) {
+    apply plugin: 'com.audiomack.dexguard-stub'
+} else {
+    apply plugin: 'dexguard'
+}
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    defaultConfig {
+        applicationId "com.example.dexguardsample"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.kotlinVersion}"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+}
+
+dexguard {
+    configurations {
+        release {
+            defaultConfiguration "dexguard-project.txt"
+        }
+    }
+}

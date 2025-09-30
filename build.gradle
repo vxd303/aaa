@@ -73,7 +73,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.android.tools.build:bundletool:1.4.0'
         classpath 'com.google.android.gms:oss-licenses-plugin:0.10.2'
-        classpath "embrace-io:embrace-swazzler:$embraceVersion"
+        if (!Boolean.parseBoolean(findProperty("useEmbraceStub")?.toString() ?: "true")) {
+            classpath "embrace-io:embrace-swazzler:$embraceVersion"
+        }
     }
 }
 
@@ -101,8 +103,8 @@ allprojects {
         }
         maven {
             credentials  {
-                username = SECRET_WITHOUT_QUOTES("AM_GUARDSQUARE_USER")
-                password = SECRET_WITHOUT_QUOTES("AM_GUARDSQUARE_PASSWORD")
+                username = "dev@audiomack.com"
+                password = "42Z}(#m{}Xpq39=4>@)*"
             }
             url "https://maven.guardsquare.com"
             content {
